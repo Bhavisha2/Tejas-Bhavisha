@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're Invited! 💍</title>
+    
+    <!-- WHATSAPP & SOCIAL SHARE PREVIEW TAGS -->
+    <meta property="og:title" content="Tejas and Bhavisha's Engagement Invite!">
+    <meta property="og:description" content="Please join us for a celebration. Click to watch our video invitation and RSVP :).">
+    <!-- PASTE YOUR DIRECT IMGUR LINK BELOW inside the quotes -->
+    <meta property="og:image" content="https://i.imgur.com/hetJcjS.jpeg">
+    <meta property="og:type" content="website">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Import EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #fdfbf7; /* Creamy off-white */
+            color: #4a4a4a;
+        }
+        h1, h2, h3, .serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #c4b5fd;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Canva Embed Responsive Fixes */
+        .canva-embed-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #eee;
+        }
+        .canva-embed-container iframe, 
+        .canva-embed-container > div {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            border: none;
+            margin: 0 !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Hero / Header -->
+    <header class="w-full text-center pt-12 pb-8 px-4">
+        <div class="mb-4">
+            <span class="text-indigo-400 text-sm tracking-widest uppercase font-semibold">Save the Date</span>
+        </div>
+        <h1 class="text-5xl md:text-6xl text-gray-800 mb-4 italic">You are invited</h1>
+        <p class="text-lg text-gray-500 max-w-lg mx-auto">
+            We are so excited to celebrate this special moment with you. Please watch the invitation below for details.
+        </p>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 max-w-4xl pb-16">
+        
+        <!-- VIDEO SECTION -->
+        <section class="mb-16">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <!-- START: Canva Embed Code -->
+               <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
+ padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
+ border-radius: 8px; will-change: transform;">
+  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+    src="https://www.canva.com/design/DAG-HXJIswg/UaH4MAoooU9hF58899r1RA/watch?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+  </iframe>
+</div>
+    </div>
+                <!-- END: Canva Embed Code -->
+            </div>
+        </section>
+
+        <!-- RSVP FORM SECTION -->
+        <section id="rsvp" class="max-w-xl mx-auto mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl text-gray-800 mb-2">RSVP</h2>
+                <div class="h-1 w-20 bg-indigo-300 mx-auto rounded-full"></div>
+                <p class="mt-4 text-gray-600">Please let us know if you can make it by filling out the form below.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 p-8 relative">
+                
+                <!-- Success Message Overlay -->
+                <div id="success-message" class="hidden absolute inset-0 bg-white z-10 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+                    <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-3xl mb-4">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3 class="text-2xl font-serif text-gray-800 mb-2">Thank you!</h3>
+                    <p class="text-gray-600">Your RSVP has been sent successfully. Please check your email for confirmation.</p>
+                    <button onclick="resetForm()" class="mt-6 text-sm text-indigo-500 hover:text-indigo-700 underline">
+                        Send another response
+                    </button>
+                </div>
+
+                <form id="rsvp-form" class="space-y-6">
+                    <!-- Guest Name -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name(s)</label>
+                        <input type="text" id="name" required placeholder="e.g. Jane & John Doe"
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none transition duration-200 bg-gray-50">
+                    </div>
+
+                    <!-- Email Address -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="email" required placeholder="john@example.com"
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none transition duration-200 bg-gray-50">
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="phone" required placeholder="e.g. (555) 123-4567"
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none transition duration-200 bg-gray-50">
+                    </div>
+
+                    <!-- Attendance -->
+                    <div>
+                        <span class="block text-sm font-medium text-gray-700 mb-2">Will you be attending?</span>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="attending" value="yes" class="peer sr-only" checked>
+                                <div class="rounded-lg border border-gray-300 p-4 text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition hover:bg-gray-50">
+                                    <div class="font-semibold">Joyfully Accept</div>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="attending" value="no" class="peer sr-only">
+                                <div class="rounded-lg border border-gray-300 p-4 text-center peer-checked:border-red-400 peer-checked:bg-red-50 peer-checked:text-red-700 transition hover:bg-gray-50">
+                                    <div class="font-semibold">Regretfully Decline</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Guest Count -->
+                    <div id="guest-count-container">
+                        <label for="guests" class="block text-sm font-medium text-gray-700 mb-1">Number of Guests</label>
+                        <select id="guests" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none transition duration-200 bg-gray-50">
+                            <option value="1">1 Person</option>
+                            <option value="2">2 People</option>
+                            <option value="3">3 People</option>
+                            <option value="4">4 People</option>
+                            <option value="5">5 People</option>
+                            <option value="6">6 People</option>
+                            <option value="7">7 People</option>
+                            <option value="8">8 People</option>
+                            <option value="9">9 People</option>
+                            <option value="10">10 People</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="submit-btn" 
+                        class="w-full bg-gray-900 text-white font-bold py-4 rounded-lg hover:bg-gray-800 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                        <span>Confirm RSVP</span>
+                    </button>
+                </form>
+            </div>
+            
+             <p class="text-center text-xs text-gray-400 mt-8">
+                Created with ❤️
+            </p>
+        </section>
+
+    </main>
+
+    <!-- Firebase & EmailJS Configuration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        // Your web app's Firebase configuration
+      const firebaseConfig = {
+  apiKey: "AIzaSyCqeylMl37qqzIbr4tprpZOD3nCN1lLb1E",
+  authDomain: "engagement-rsvp-58a26.firebaseapp.com",
+  databaseURL: "https://engagement-rsvp-58a26-default-rtdb.firebaseio.com",
+  projectId: "engagement-rsvp-58a26",
+  storageBucket: "engagement-rsvp-58a26.firebasestorage.app",
+  messagingSenderId: "788570208401",
+  appId: "1:788570208401:web:583de9f0a54c75ca78a730",
+  measurementId: "G-5EP8YYK9HK"
+};
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app); 
+        
+        // 2. Authenticate
+        const initAuth = async () => {
+            try {
+                await signInAnonymously(auth);
+                console.log("Authenticated anonymously");
+            } catch (error) {
+                console.error("Auth error:", error);
+                alert("Error connecting to database. Please check your Firebase Console Authentication settings.");
+            }
+        };
+        initAuth(); 
+
+        // 3. EmailJS Initialization
+        // !!! IMPORTANT: Replace "YOUR_PUBLIC_KEY_HERE" with your Public Key from EmailJS
+        try {
+            emailjs.init("mGlbZePxJW6NSfVZ1"); 
+        } catch(e) {
+            console.log("EmailJS not configured yet");
+        }
+
+        // 4. Handle Form Submission
+        const form = document.getElementById('rsvp-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const successMsg = document.getElementById('success-message');
+        const attendingRadios = document.getElementsByName('attending');
+        const guestContainer = document.getElementById('guest-count-container');
+
+        // Toggle guest count based on attendance
+        attendingRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'no') {
+                    guestContainer.style.opacity = '0.5';
+                    guestContainer.style.pointerEvents = 'none';
+                    document.getElementById('guests').value = 0;
+                } else {
+                    guestContainer.style.opacity = '1';
+                    guestContainer.style.pointerEvents = 'auto';
+                    document.getElementById('guests').value = 1;
+                }
+            });
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // UI Loading State
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading-spinner"></div> Processing...';
+            submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            try {
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const attending = document.querySelector('input[name="attending"]:checked').value === 'yes';
+                const guests = attending ? parseInt(document.getElementById('guests').value) : 0;
+                
+                // 1. Save to Firebase
+                const newRsvpRef = push(ref(db, 'rsvps'));
+                await set(newRsvpRef, {
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    attending: attending,
+                    guests: guests,
+                    submittedAt: serverTimestamp()
+                });
+
+                // 2. Send Confirmation Email (EmailJS)
+                if (email) {
+                    try {
+                        // Check if keys are still default placeholder
+                        // !!! IMPORTANT: Replace "YOUR_SERVICE_ID_HERE" and "YOUR_TEMPLATE_ID_HERE"
+                        await emailjs.send("service_pg9bb4n", "template_jdz0eyk", {
+                            name: name,
+                            email: email,
+                            phone: phone,
+                            attending: attending ? "Joyfully Accept" : "Regretfully Decline",
+                            guests: guests
+                        });
+                        console.log("Email sent successfully");
+                    } catch (emailError) {
+                        // DEBUG MODE: This will now ALERT you if the email fails
+                        console.error("Failed to send email:", emailError);
+                        alert("RSVP Saved, but Email Failed: " + JSON.stringify(emailError));
+                    }
+                }
+
+                // Show Success
+                successMsg.classList.remove('hidden');
+                form.reset();
+                guestContainer.style.opacity = '1';
+                guestContainer.style.pointerEvents = 'auto';
+                
+            } catch (error) {
+                console.error("Error adding RSVP: ", error);
+                alert("Could not save RSVP. Check Console for details.");
+            } finally {
+                // Reset Button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        });
+
+        window.resetForm = function() {
+            successMsg.classList.add('hidden');
+            guestContainer.style.opacity = '1';
+            guestContainer.style.pointerEvents = 'auto';
+            document.getElementById('guests').value = 1;
+        }
+    </script>
+</body>
+</html>
