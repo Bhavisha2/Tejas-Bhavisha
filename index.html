@@ -8,7 +8,6 @@
     <!-- WHATSAPP & SOCIAL SHARE PREVIEW TAGS -->
     <meta property="og:title" content="Tejas and Bhavisha's Engagement Invite!">
     <meta property="og:description" content="Please join us for a celebration. Click to watch our video invitation and RSVP :).">
-    <!-- PASTE YOUR DIRECT IMGUR LINK BELOW inside the quotes -->
     <meta property="og:image" content="https://i.imgur.com/hetJcjS.jpeg">
     <meta property="og:type" content="website">
 
@@ -39,27 +38,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* Canva Embed Responsive Fixes */
-        .canva-embed-container {
-            position: relative;
-            width: 100%;
-            height: 0;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            overflow: hidden;
-            background: #eee;
-        }
-        .canva-embed-container iframe, 
-        .canva-embed-container > div {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100% !important;
-            height: 100% !important;
-            border: none;
-            margin: 0 !important;
-        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -77,18 +55,27 @@
 
     <main class="flex-grow container mx-auto px-4 max-w-4xl pb-16">
         
-        <!-- VIDEO SECTION -->
+        <!-- VIDEO SECTION (UPDATED: Responsive) -->
         <section class="mb-16">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <!-- START: Canva Embed Code -->
-               <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%;
- padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
- border-radius: 8px; will-change: transform;">
-  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-    src="https://www.canva.com/design/DAG-HXJIswg/UaH4MAoooU9hF58899r1RA/watch?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-  </iframe>
-</div>
-                <!-- END: Canva Embed Code -->
+            <!-- 
+                RESPONSIVE CONTAINER:
+                We removed 'max-w-sm' so it can grow on desktops.
+                We added 'bg-black' so it looks like a cinema player on desktop.
+            -->
+            <div class="w-full mx-auto shadow-2xl rounded-xl overflow-hidden bg-black">
+                
+                <!-- 
+                   RESPONSIVE ASPECT RATIO:
+                   1. Default (Mobile): pt-[177.77%] -> Makes it a tall vertical rectangle (9:16).
+                   2. md: (Computer/Tablet): pt-[56.25%] -> Switches to a wide horizontal rectangle (16:9).
+                -->
+           <div class="relative w-full h-0 pt-[177.77%] md:pt-[56.25%]">
+                  <iframe loading="lazy" class="absolute top-0 left-0 w-full h-full border-0"
+                    src="https://www.canva.com/design/DAG-HXJIswg/UaH4MAoooU9hF58899r1RA/watch?embed" 
+                    allow="fullscreen">
+                  </iframe>
+                </div>
+               
             </div>
         </section>
 
@@ -193,7 +180,7 @@
         import { getDatabase, ref, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         // Your web app's Firebase configuration
-      const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyCqeylMl37qqzIbr4tprpZOD3nCN1lLb1E",
   authDomain: "engagement-rsvp-58a26.firebaseapp.com",
   databaseURL: "https://engagement-rsvp-58a26-default-rtdb.firebaseio.com",
@@ -222,7 +209,6 @@
         initAuth(); 
 
         // 3. EmailJS Initialization
-        // !!! IMPORTANT: Replace "YOUR_PUBLIC_KEY_HERE" with your Public Key from EmailJS
         try {
             emailjs.init("oJ76ZNcB02gEX9dy_"); 
         } catch(e) {
@@ -281,8 +267,6 @@
                 // 2. Send Confirmation Email (EmailJS)
                 if (email) {
                     try {
-                        // Check if keys are still default placeholder
-                        // !!! IMPORTANT: Replace "YOUR_SERVICE_ID_HERE" and "YOUR_TEMPLATE_ID_HERE"
                         await emailjs.send("service_pg9bb4n", "template_k8fmhsn", {
                             name: name,
                             email: email,
@@ -292,7 +276,6 @@
                         });
                         console.log("Email sent successfully");
                     } catch (emailError) {
-                        // DEBUG MODE: This will now ALERT you if the email fails
                         console.error("Failed to send email:", emailError);
                         alert("RSVP Saved, but Email Failed: " + JSON.stringify(emailError));
                     }
@@ -323,10 +306,4 @@
         }
     </script>
 </body>
-
 </html>
-
-
-
-
-
