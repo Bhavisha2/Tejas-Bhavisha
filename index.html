@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <!-- Social Media Previews (Open Graph) -->
+    
+    <!-- Social Media Previews (Open Graph) -->
     <meta property="og:title" content="Tejas and Bhavisha's Engagement Invite!">
     <meta property="og:description" content="Please join us for a celebration. Click to watch our video invitation and RSVP :).">
-    <!-- PASTE YOUR DIRECT IMGUR LINK BELOW inside the quotes -->
     <meta property="og:image" content="https://i.imgur.com/hetJcjS.jpeg">
     <meta property="og:type" content="website">
-    
+
     <title>You're Invited | Engagement Celebration</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -70,6 +69,21 @@
         html {
             scroll-behavior: smooth;
         }
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 20px;
+            height: 20px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-wedding-cream text-wedding-charcoal antialiased">
@@ -94,16 +108,12 @@
             <p class="font-serif text-2xl md:text-3xl text-wedding-gold mb-12">We're Getting Engaged :)</p>
             
             <!-- VIDEO SECTION -->
-            <!-- Instructions: Replace 'video.mp4' with your actual file name -->
             <div class="bg-white p-4 rounded-2xl shadow-xl mb-12 transform rotate-1 hover:rotate-0 transition duration-500">
                 <div class="video-container bg-black">
-                    <!-- Placeholder video used for demonstration. Replace src="" with your file. -->
                     <video controls playsinline poster="https://i.imgur.com/hetJcjS.jpeg">
                         <!-- 
-                            IMPORTANT: Do not paste a Canva "Share" link here. 
-                            1. Download the video from Canva (Share > Download > MP4 Video).
-                            2. Save it in this folder (e.g., named "engagement.mp4").
-                            3. Change the src below to "engagement.mp4".
+                            IMPORTANT: 
+                            1. Ensure "EngagementInvitationT&B.mp4" is in the same folder as this file.
                         -->
                         <source src="EngagementInvitationT&B.mp4" type="video/mp4">
                         Your browser does not support the video tag.
@@ -152,7 +162,6 @@
                     </div>
                     <h3 class="font-serif text-2xl mb-2">Dress Code</h3>
                     <p class="font-sans text-gray-600">Indian</p>
-                   <!--<p class="font-sans text-gray-400 text-sm mt-2">Dress to impress!</p>--> 
                 </div>
             </div>
         </div>
@@ -195,7 +204,7 @@
                     </div>
                 </div>
 
-                <!-- Guest Count (Only show if attending - simplified for this demo) -->
+                <!-- Guest Count -->
                 <div id="guestCountDiv">
                     <label class="block font-sans text-sm font-bold text-gray-700 mb-2">Total Guests (Including You)</label>
                     <select id="guestCount" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wedding-gold">
@@ -212,15 +221,23 @@
                     </select>
                 </div>
 
+                <!-- Contact Selection (New) -->
+                <div id="contactDiv">
+                    <label class="block font-sans text-sm font-bold text-gray-700 mb-2">Send RSVP To</label>
+                    <select id="hostSelector" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wedding-gold">
+                        <!-- Options populated by JS -->
+                    </select>
+                </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="w-full bg-wedding-charcoal text-white font-serif text-xl py-4 rounded-lg hover:bg-wedding-gold transition duration-300 shadow-lg transform active:scale-95 flex items-center justify-center gap-2">
-                    <span>Send RSVP via WhatsApp</span>
+                <button type="submit" id="submitBtn" class="w-full bg-wedding-charcoal text-white font-serif text-xl py-4 rounded-lg hover:bg-wedding-gold transition duration-300 shadow-lg transform active:scale-95 flex items-center justify-center gap-2">
+                    <span id="btnText">Save RSVP & Open WhatsApp</span>
                     <i class="fab fa-whatsapp"></i>
+                    <div id="btnSpinner" class="spinner hidden"></div>
                 </button>
                 
-                <p class="text-center text-xs text-gray-400 mt-2">
-                    This will open WhatsApp with your pre-filled details.
+                <p id="statusMsg" class="text-center text-xs text-gray-400 mt-2">
+                    This will save your RSVP and open WhatsApp to confirm.
                 </p>
             </form>
         </div>
@@ -232,61 +249,145 @@
         <p class="font-sans text-xs text-stone-400 mt-2">Can't wait to celebrate with you!</p>
     </footer>
 
-    <!-- LOGIC -->
-    <script>
-        // --- CONFIGURATION ---
-        // REPLACE THIS NUMBER WITH YOUR OWN (Include Country Code, no symbols)
-        // Example: 15551234567
-        const HOST_PHONE_NUMBER = "15551234567"; 
+    <!-- LOGIC with FIREBASE -->
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        document.getElementById('rsvpForm').addEventListener('submit', function(e) {
+        // --- CONFIGURATION ---
+        // CRITICAL: UPDATE THIS LIST WITH YOUR REAL CONTACTS
+        // Format: CountryCode + Number (No + sign, no spaces)
+        const RSVP_HOSTS = [
+            { name: "Anila", phone: "254752419162" },
+            { name: "Tejas", phone: "17059776124" }
+        ];
+
+        // Initialize Firebase
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // UI References
+        const form = document.getElementById('rsvpForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const statusMsg = document.getElementById('statusMsg');
+        const hostSelector = document.getElementById('hostSelector');
+
+        // Populate Host Dropdown
+        RSVP_HOSTS.forEach(host => {
+            const option = document.createElement('option');
+            option.value = host.phone;
+            option.textContent = host.name;
+            hostSelector.appendChild(option);
+        });
+
+        // Toggle UI Helper
+        function setLoading(isLoading) {
+            if (isLoading) {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                btnText.textContent = "Saving...";
+                btnSpinner.classList.remove('hidden');
+                document.querySelector('.fa-whatsapp').classList.add('hidden');
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                btnText.textContent = "RSVP Sent!";
+                btnSpinner.classList.add('hidden');
+                document.querySelector('.fa-whatsapp').classList.remove('hidden');
+            }
+        }
+
+        // Handle Form Submit
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // Get Values
+            // 1. Get Selected Host Phone
+            const selectedPhone = hostSelector.value;
+            const selectedHostName = hostSelector.options[hostSelector.selectedIndex].text;
+
+            // 2. Validation for Phone Number
+            if (selectedPhone === "15551234567" || selectedPhone === "15557654321") {
+                alert("Please update the RSVP_HOSTS list in the code with real numbers!");
+                return;
+            }
+
+            setLoading(true);
+
+            // 3. Get Form Values
             const name = document.getElementById('guestName').value;
             const attendance = document.querySelector('input[name="attendance"]:checked').value;
             const count = document.getElementById('guestCount').value;
-            const dietary = document.getElementById('dietary').value;
 
-            // Construct Message
-            let message = "";
-            
-            if (attendance === "Joyfully Accept") {
-                message = `Hi! 👋 I'd love to attend your Engagement Party! \n\n🤵 Name: ${name}\n👥 Total Guests: ${count}\n🥗 Dietary: ${dietary || "None"}`;
-            } else {
-                message = `Hi! 👋 Thank you for the invite. Unfortunately, ${name} won't be able to make it to the Engagement Party. Sending my love! ❤️`;
+            try {
+                // 4. Authenticate Anonymously (Required for Database access)
+                if (!auth.currentUser) {
+                    await signInAnonymously(auth);
+                }
+
+                // 5. Save to Firestore Database
+                const rsvpData = {
+                    name: name,
+                    attendance: attendance,
+                    guestCount: attendance === "Joyfully Accept" ? count : 0,
+                    sentTo: selectedHostName, // Store who they RSVP'd to
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent
+                };
+
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'rsvps'), rsvpData);
+
+                // 6. Success UI
+                setLoading(false);
+                statusMsg.textContent = `Success! Saved. Opening WhatsApp to ${selectedHostName}...`;
+                statusMsg.classList.add('text-green-600');
+                statusMsg.classList.remove('text-gray-400');
+
+                // 7. Generate WhatsApp Link & Open
+                let message = "";
+                if (attendance === "Joyfully Accept") {
+                    message = `Hi ${selectedHostName}! 👋 I'd love to attend the Engagement Party! \n\n🤵 Name: ${name}\n👥 Total Guests: ${count}`;
+                } else {
+                    message = `Hi ${selectedHostName}! 👋 Thank you for the invite. Unfortunately, ${name} won't be able to make it. Sending my love! ❤️`;
+                }
+
+                const waLink = `https://wa.me/${selectedPhone}?text=${encodeURIComponent(message)}`;
+                
+                // Slight delay to ensure UI updates before popup
+                setTimeout(() => {
+                    window.open(waLink, '_blank');
+                }, 500);
+
+            } catch (error) {
+                console.error("Error saving RSVP:", error);
+                setLoading(false);
+                btnText.textContent = "Error - Try Again";
+                statusMsg.textContent = "Could not save to database. Please check your internet.";
+                statusMsg.classList.add('text-red-500');
             }
-
-            // Encode for URL
-            const encodedMessage = encodeURIComponent(message);
-            
-            // Create WhatsApp Link
-            const waLink = `https://wa.me/${HOST_PHONE_NUMBER}?text=${encodedMessage}`;
-
-            // Open Link
-            window.open(waLink, '_blank');
         });
 
-        // Toggle Guest Count visibility based on attendance
+        // Toggle Visibility Logic
         const radioButtons = document.querySelectorAll('input[name="attendance"]');
         const guestCountDiv = document.getElementById('guestCountDiv');
-        const dietaryDiv = document.getElementById('dietary').parentElement;
 
         radioButtons.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.value === 'Regretfully Decline') {
                     guestCountDiv.style.opacity = '0.5';
                     guestCountDiv.style.pointerEvents = 'none';
-                    dietaryDiv.style.opacity = '0.5';
-                    dietaryDiv.style.pointerEvents = 'none';
                 } else {
                     guestCountDiv.style.opacity = '1';
                     guestCountDiv.style.pointerEvents = 'auto';
-                    dietaryDiv.style.opacity = '1';
-                    dietaryDiv.style.pointerEvents = 'auto';
                 }
             });
-        });v
+        });
     </script>
 </body>
 </html>
