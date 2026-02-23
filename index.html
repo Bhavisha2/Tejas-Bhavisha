@@ -17,12 +17,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
     
+    <!-- Updated EmailJS SDK to Version 4 -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         'wedding-gold': '#00D6CE',
+                        'wedding-gold-light': '#E5FAF9', /* Added a soft version for focus rings/backgrounds */
                         'wedding-cream': '#F9F7F2',
                         'wedding-sage': '#8A9A5B',
                         'wedding-charcoal': '#36454F',
@@ -84,6 +88,11 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Success Modal Overlay */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
     </style>
 </head>
 <body class="bg-wedding-cream text-wedding-charcoal antialiased">
@@ -92,7 +101,7 @@
     <nav class="fixed w-full z-50 bg-wedding-cream/90 backdrop-blur-sm border-b border-stone-200">
         <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
             <div class="font-serif text-2xl text-wedding-gold tracking-wider">T & B</div>
-            <a href="#rsvp" class="bg-wedding-charcoal text-white px-6 py-2 rounded-full font-sans text-sm tracking-wide hover:bg-wedding-gold transition duration-300">RSVP</a>
+            <a href="#rsvp" class="bg-wedding-charcoal text-white px-6 py-2 rounded-full font-sans text-sm tracking-wide hover:bg-wedding-gold hover:text-wedding-charcoal transition duration-300">RSVP</a>
         </div>
     </nav>
 
@@ -105,17 +114,16 @@
         <div class="animate-fade-in z-10 max-w-2xl w-full">
             <p class="font-sans text-wedding-sage uppercase tracking-[0.2em] mb-4 text-sm">Save the Date</p>
             <h1 class="font-serif text-6xl md:text-8xl text-wedding-charcoal mb-4 italic">Tejas & Bhavisha</h1>
-            <p class="font-serif text-2xl md:text-3xl text-wedding-gold mb-12">We're Getting Engaged :)</p>
-            
+            <p class="font-serif text-2xl md:text-3xl text-wedding-gold mb-12">We're Getting Engaged 🧿</p>
             <!-- VIDEO SECTION -->
             <div class="bg-white p-4 rounded-2xl shadow-xl mb-12 transform rotate-1 hover:rotate-0 transition duration-500">
                 <div class="video-container bg-black">
                     <video controls playsinline poster="https://i.imgur.com/hetJcjS.jpeg">
                         <!-- 
                             IMPORTANT: 
-                            1. Ensure "EngagementInvitationT&B.mp4" is in the same folder as this file.
+                            1. Ensure "EngagementInvitationB&T.mp4" is in the same folder as this file.
                         -->
-                        <source src="EngagementInvitationT&B.mp4" type="video/mp4">
+                        <source src="EngagementInvitationB&T.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 </div>
@@ -167,227 +175,240 @@
         </div>
     </section>
 
-    <!-- RSVP Section -->
-    <section id="rsvp" class="py-20 bg-wedding-charcoal text-wedding-cream relative">
-        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-        
-        <div class="max-w-xl mx-auto px-4 relative z-10">
-            <div class="text-center mb-10">
-                <h2 class="font-serif text-4xl mb-2 text-white">Kindly Respond</h2>
-                <p class="font-sans text-stone-400">Please RSVP by April 20th</p>
+    <!-- RSVP FORM SECTION -->
+    <section id="rsvp" class="max-w-xl mx-auto mb-16 pt-16">
+        <div class="text-center mb-10">
+            <h2 class="text-4xl font-serif text-wedding-charcoal mb-2">Kindly RSVP</h2>
+            <div class="h-1 w-20 bg-wedding-gold mx-auto rounded-full"></div>
+            <p class="mt-4 font-sans text-gray-600">Please RSVP by 26th April 2026</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 p-8 relative">
+            
+            <!-- Success Message Overlay -->
+            <div id="success-message" class="hidden absolute inset-0 bg-white z-10 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+                <div class="w-16 h-16 bg-wedding-gold-light text-wedding-gold rounded-full flex items-center justify-center text-3xl mb-4">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3 class="text-2xl font-serif text-wedding-charcoal mb-2">Thank you!</h3>
+                <p class="font-sans text-gray-600">Your RSVP has been sent successfully. Please check your email for confirmation.</p>
+                <button onclick="resetForm()" class="mt-6 text-sm font-sans text-wedding-gold hover:text-wedding-charcoal underline transition duration-200">
+                    Send another response
+                </button>
             </div>
 
-            <form id="rsvpForm" class="bg-white text-gray-800 p-8 rounded-xl shadow-2xl space-y-6">
-                
+            <form id="rsvp-form" class="space-y-6 font-sans">
                 <!-- Guest Name -->
                 <div>
-                    <label class="block font-sans text-sm font-bold text-gray-700 mb-2">Your Name</label>
-                    <input type="text" id="guestName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wedding-gold focus:border-transparent transition" placeholder="e.g., Jane Doe">
+                    <label for="name" class="block text-sm font-medium text-wedding-charcoal mb-1">Full Name(s)</label>
+                    <input type="text" id="name" required placeholder="e.g. Jane & John Doe"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-wedding-gold-light focus:border-wedding-gold outline-none transition duration-200 bg-gray-50">
+                </div>
+
+                <!-- Email Address -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-wedding-charcoal mb-1">Email Address</label>
+                    <input type="email" id="email" required placeholder="john@example.com"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-wedding-gold-light focus:border-wedding-gold outline-none transition duration-200 bg-gray-50">
+                </div>
+
+                <!-- Phone Number -->
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-wedding-charcoal mb-1">Phone Number</label>
+                    <input type="tel" id="phone" required placeholder="e.g. (555) 123-4567"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-wedding-gold-light focus:border-wedding-gold outline-none transition duration-200 bg-gray-50">
                 </div>
 
                 <!-- Attendance -->
                 <div>
-                    <label class="block font-sans text-sm font-bold text-gray-700 mb-2">Will you be attending?</label>
-                    <div class="flex gap-4">
-                        <label class="flex-1 cursor-pointer">
-                            <input type="radio" name="attendance" value="Joyfully Accept" class="peer sr-only" checked>
-                            <div class="text-center py-3 border border-gray-300 rounded-lg peer-checked:bg-wedding-sage peer-checked:text-white peer-checked:border-wedding-sage transition">
-                                Joyfully Accept
+                    <span class="block text-sm font-medium text-wedding-charcoal mb-2">Will you be attending?</span>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="attending" value="yes" class="peer sr-only" checked>
+                            <div class="rounded-lg border border-gray-300 p-4 text-center peer-checked:border-wedding-gold peer-checked:bg-wedding-gold-light peer-checked:text-wedding-charcoal transition hover:bg-gray-50">
+                                <div class="font-semibold">Joyfully Accept</div>
                             </div>
                         </label>
-                        <label class="flex-1 cursor-pointer">
-                            <input type="radio" name="attendance" value="Regretfully Decline" class="peer sr-only">
-                            <div class="text-center py-3 border border-gray-300 rounded-lg peer-checked:bg-gray-500 peer-checked:text-white peer-checked:border-gray-500 transition">
-                                Regretfully Decline
+                        <label class="cursor-pointer">
+                            <input type="radio" name="attending" value="no" class="peer sr-only">
+                            <div class="rounded-lg border border-gray-300 p-4 text-center peer-checked:border-rose-400 peer-checked:bg-rose-50 peer-checked:text-rose-700 transition hover:bg-gray-50">
+                                <div class="font-semibold">Regretfully Decline</div>
                             </div>
                         </label>
                     </div>
                 </div>
 
                 <!-- Guest Count -->
-                <div id="guestCountDiv">
-                    <label class="block font-sans text-sm font-bold text-gray-700 mb-2">Total Guests (Including You)</label>
-                    <select id="guestCount" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wedding-gold">
-                        <option value="1">Just Me</option>
-                        <option value="2">2 Guests</option>
-                        <option value="3">3 Guests</option>
-                        <option value="4">4 Guests</option>
-                        <option value="5">5 Guests</option>
-                        <option value="6">6 Guests</option>
-                        <option value="7">7 Guests</option>
-                        <option value="8">8 Guests</option>
-                        <option value="9">9 Guests</option>
-                        <option value="10">10 Guests</option>
+                <div id="guest-count-container">
+                    <label for="guests" class="block text-sm font-medium text-wedding-charcoal mb-1">Number of Guests</label>
+                    <select id="guests" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-wedding-gold-light focus:border-wedding-gold outline-none transition duration-200 bg-gray-50">
+                        <option value="1">1 Person</option>
+                        <option value="2">2 People</option>
+                        <option value="3">3 People</option>
+                        <option value="4">4 People</option>
+                        <option value="5">5 People</option>
+                        <option value="6">6 People</option>
+                        <option value="7">7 People</option>
+                        <option value="8">8 People</option>
+                        <option value="9">9 People</option>
+                        <option value="10">10 People</option>
                     </select>
                 </div>
 
-                <!-- Contact Selection (New) -->
-                <div id="contactDiv">
-                    <label class="block font-sans text-sm font-bold text-gray-700 mb-2">Send RSVP To</label>
-                    <select id="hostSelector" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wedding-gold">
-                        <!-- Options populated by JS -->
-                    </select>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" id="submitBtn" class="w-full bg-wedding-charcoal text-white font-serif text-xl py-4 rounded-lg hover:bg-wedding-gold transition duration-300 shadow-lg transform active:scale-95 flex items-center justify-center gap-2">
-                    <span id="btnText">Save RSVP & Open WhatsApp</span>
-                    <i class="fab fa-whatsapp"></i>
-                    <div id="btnSpinner" class="spinner hidden"></div>
+                <button type="submit" id="submit-btn" 
+                    class="w-full bg-wedding-charcoal text-white font-bold py-4 rounded-lg hover:bg-wedding-gold hover:text-wedding-charcoal transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                    <span>Confirm RSVP</span>
                 </button>
-                
-                <p id="statusMsg" class="text-center text-xs text-gray-400 mt-2">
-                    This will save your RSVP and open WhatsApp to confirm.
-                </p>
             </form>
         </div>
+        
+         <p class="text-center text-xs font-sans text-gray-400 mt-8">
+            Created with ❤️🧿
+        </p>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-wedding-cream py-8 text-center border-t border-stone-200">
-        <p class="font-serif text-wedding-charcoal text-lg">Tejas & Bhavisha</p>
-        <p class="font-sans text-xs text-stone-400 mt-2">Can't wait to celebrate with you!</p>
-    </footer>
-
-    <!-- LOGIC with FIREBASE -->
+    <!-- Firebase & EmailJS Configuration -->
     <script type="module">
-        // Import Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getDatabase, ref, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-        // --- CONFIGURATION ---
-        // CRITICAL: UPDATE THIS LIST WITH YOUR REAL CONTACTS
-        // Format: CountryCode + Number (No + sign, no spaces)
-        const RSVP_HOSTS = [
-            { name: "Anila", phone: "254752419162" },
-            { name: "Tejas", phone: "17059776124" }
-        ];
+        // IMPORTANT: Reverted to your NEW project where you fixed the security rules (58a26)
+        const firebaseConfig = {
+        apiKey: "AIzaSyCqeylMl37qqzIbr4tprpZOD3nCN1lLb1E",
+          authDomain: "engagement-rsvp-58a26.firebaseapp.com",
+          databaseURL: "https://engagement-rsvp-58a26-default-rtdb.firebaseio.com",
+          projectId: "engagement-rsvp-58a26",
+          storageBucket: "engagement-rsvp-58a26.firebasestorage.app",
+          messagingSenderId: "788570208401",
+          appId: "1:788570208401:web:583de9f0a54c75ca78a730",
+          measurementId: "G-5EP8YYK9HK"
+        };
 
         // Initialize Firebase
-        const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-        // UI References
-        const form = document.getElementById('rsvpForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const btnSpinner = document.getElementById('btnSpinner');
-        const statusMsg = document.getElementById('statusMsg');
-        const hostSelector = document.getElementById('hostSelector');
-
-        // Populate Host Dropdown
-        RSVP_HOSTS.forEach(host => {
-            const option = document.createElement('option');
-            option.value = host.phone;
-            option.textContent = host.name;
-            hostSelector.appendChild(option);
-        });
-
-        // Toggle UI Helper
-        function setLoading(isLoading) {
-            if (isLoading) {
-                submitBtn.disabled = true;
-                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
-                btnText.textContent = "Saving...";
-                btnSpinner.classList.remove('hidden');
-                document.querySelector('.fa-whatsapp').classList.add('hidden');
-            } else {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                btnText.textContent = "RSVP Sent!";
-                btnSpinner.classList.add('hidden');
-                document.querySelector('.fa-whatsapp').classList.remove('hidden');
+        const db = getDatabase(app); 
+        
+        // 2. Authenticate
+        const initAuth = async () => {
+            try {
+                await signInAnonymously(auth);
+                console.log("Authenticated anonymously");
+            } catch (error) {
+                console.error("Auth error:", error);
+                alert("Error connecting to database. Please check your Firebase Console Authentication settings.");
             }
+        };
+        initAuth(); 
+
+        // 3. EmailJS Initialization
+        try {
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init({
+                    publicKey: "PT4gRrhYF-q4S0gKs"
+                }); 
+                console.log("EmailJS loaded correctly");
+            } else {
+                console.warn("EmailJS is blocked by browser/ad-blocker.");
+            }
+        } catch(e) {
+            console.error("EmailJS Init Error:", e);
         }
 
-        // Handle Form Submit
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // 4. Handle Form Submission
+        const form = document.getElementById('rsvp-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const successMsg = document.getElementById('success-message');
+        const attendingRadios = document.getElementsByName('attending');
+        const guestContainer = document.getElementById('guest-count-container');
 
-            // 1. Get Selected Host Phone
-            const selectedPhone = hostSelector.value;
-            const selectedHostName = hostSelector.options[hostSelector.selectedIndex].text;
-
-            // 2. Validation for Phone Number
-            if (selectedPhone === "15551234567" || selectedPhone === "15557654321") {
-                alert("Please update the RSVP_HOSTS list in the code with real numbers!");
-                return;
-            }
-
-            setLoading(true);
-
-            // 3. Get Form Values
-            const name = document.getElementById('guestName').value;
-            const attendance = document.querySelector('input[name="attendance"]:checked').value;
-            const count = document.getElementById('guestCount').value;
-
-            try {
-                // 4. Authenticate Anonymously (Required for Database access)
-                if (!auth.currentUser) {
-                    await signInAnonymously(auth);
-                }
-
-                // 5. Save to Firestore Database
-                const rsvpData = {
-                    name: name,
-                    attendance: attendance,
-                    guestCount: attendance === "Joyfully Accept" ? count : 0,
-                    sentTo: selectedHostName, // Store who they RSVP'd to
-                    timestamp: serverTimestamp(),
-                    userAgent: navigator.userAgent
-                };
-
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'rsvps'), rsvpData);
-
-                // 6. Success UI
-                setLoading(false);
-                statusMsg.textContent = `Success! Saved. Opening WhatsApp to ${selectedHostName}...`;
-                statusMsg.classList.add('text-green-600');
-                statusMsg.classList.remove('text-gray-400');
-
-                // 7. Generate WhatsApp Link & Open
-                let message = "";
-                if (attendance === "Joyfully Accept") {
-                    message = `Hi ${selectedHostName}! 👋 I'd love to attend the Engagement Party! \n\n🤵 Name: ${name}\n👥 Total Guests: ${count}`;
-                } else {
-                    message = `Hi ${selectedHostName}! 👋 Thank you for the invite. Unfortunately, ${name} won't be able to make it. Sending my love! ❤️`;
-                }
-
-                const waLink = `https://wa.me/${selectedPhone}?text=${encodeURIComponent(message)}`;
-                
-                // Slight delay to ensure UI updates before popup
-                setTimeout(() => {
-                    window.open(waLink, '_blank');
-                }, 500);
-
-            } catch (error) {
-                console.error("Error saving RSVP:", error);
-                setLoading(false);
-                btnText.textContent = "Error - Try Again";
-                statusMsg.textContent = "Could not save to database. Please check your internet.";
-                statusMsg.classList.add('text-red-500');
-            }
-        });
-
-        // Toggle Visibility Logic
-        const radioButtons = document.querySelectorAll('input[name="attendance"]');
-        const guestCountDiv = document.getElementById('guestCountDiv');
-
-        radioButtons.forEach(radio => {
+        // Toggle guest count based on attendance
+        attendingRadios.forEach(radio => {
             radio.addEventListener('change', (e) => {
-                if (e.target.value === 'Regretfully Decline') {
-                    guestCountDiv.style.opacity = '0.5';
-                    guestCountDiv.style.pointerEvents = 'none';
+                if (e.target.value === 'no') {
+                    guestContainer.style.opacity = '0.5';
+                    guestContainer.style.pointerEvents = 'none';
+                    document.getElementById('guests').value = 0;
                 } else {
-                    guestCountDiv.style.opacity = '1';
-                    guestCountDiv.style.pointerEvents = 'auto';
+                    guestContainer.style.opacity = '1';
+                    guestContainer.style.pointerEvents = 'auto';
+                    document.getElementById('guests').value = 1;
                 }
             });
         });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // UI Loading State
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner mx-auto"></div>';
+            submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            try {
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const attending = document.querySelector('input[name="attending"]:checked').value === 'yes';
+                const guests = attending ? parseInt(document.getElementById('guests').value) : 0;
+                
+                // 1. Save to Firebase
+                const newRsvpRef = push(ref(db, 'rsvps'));
+                await set(newRsvpRef, {
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    attending: attending,
+                    guests: guests,
+                    submittedAt: serverTimestamp()
+                });
+
+                // 2. Send Confirmation Email (EmailJS)
+                if (email) {
+                    try {
+                        if (typeof emailjs !== 'undefined') {
+                            await emailjs.send("service_wces6rs", "template_yddkbbt", {
+                                name: name,
+                                email: email,
+                                phone: phone,
+                                attending: attending ? "Joyfully Accept" : "Regretfully Decline",
+                                guests: guests
+                            });
+                            console.log("Email sent successfully");
+                        } else {
+                            console.log("Email skipped: EmailJS blocked by browser.");
+                        }
+                    } catch (emailError) {
+                        console.error("Failed to send email:", emailError);
+                        alert("RSVP was saved successfully, but the confirmation email failed. Check console for details.");
+                    }
+                }
+
+                // Show Success
+                successMsg.classList.remove('hidden');
+                form.reset();
+                guestContainer.style.opacity = '1';
+                guestContainer.style.pointerEvents = 'auto';
+                
+            } catch (error) {
+                console.error("Error adding RSVP: ", error);
+                alert("Could not save RSVP to Database. Check Console for details.");
+            } finally {
+                // Reset Button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        });
+
+        window.resetForm = function() {
+            successMsg.classList.add('hidden');
+            guestContainer.style.opacity = '1';
+            guestContainer.style.pointerEvents = 'auto';
+            document.getElementById('guests').value = 1;
+        }
     </script>
 </body>
 </html>
