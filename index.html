@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Social Media Previews (Open Graph) -->
-    <meta property="og:title" content="Tejas and Bhavisha's Engagement Invite!">
+    <meta property="og:title" content="Tejas & Bhavisha's Engagement Invite!">
     <meta property="og:description" content="Please join us for a celebration. Click to watch our video invitation and RSVP :).">
     <meta property="og:image" content="https://i.imgur.com/hetJcjS.jpeg">
     <meta property="og:type" content="website">
@@ -152,7 +152,7 @@
                 <div class="w-24 h-1 bg-wedding-gold mx-auto"></div>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-12">
+            <div class="max-w-md mx-auto">
                 <!-- Location -->
                 <div class="text-center p-8 bg-wedding-cream rounded-lg">
                     <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-md text-wedding-gold text-2xl">
@@ -161,15 +161,6 @@
                     <h3 class="font-serif text-2xl mb-2">The Venue</h3>
                     <p class="font-sans text-gray-600 mb-4">The Kenya Brahma Sabha<br>3rd, Parklands avenue</p>
                     <a href="https://maps.google.com" target="_blank" class="text-wedding-sage text-sm font-bold underline hover:text-wedding-gold">View Map</a>
-                </div>
-
-                <!-- Dress Code -->
-                <div class="text-center p-8 bg-wedding-cream rounded-lg">
-                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-md text-wedding-gold text-2xl">
-                        <i class="fas fa-glass-cheers"></i>
-                    </div>
-                    <h3 class="font-serif text-2xl mb-2">Dress Code</h3>
-                    <p class="font-sans text-gray-600">Indian</p>
                 </div>
             </div>
         </div>
@@ -215,44 +206,15 @@
                 <!-- Phone Number -->
                 <div>
                     <label for="phone" class="block text-sm font-medium text-wedding-charcoal mb-1">Phone Number</label>
-                    <input type="tel" id="phone" required placeholder="e.g. (555) 123-4567"
+                    <input type="tel" id="phone" required placeholder="e.g. 0712345678"
                         class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-wedding-gold-light focus:border-wedding-gold outline-none transition duration-200 bg-gray-50">
-                </div>
-
-                <!-- Attendance -->
-                <div>
-                    <span class="block text-sm font-medium text-wedding-charcoal mb-2">Will you be attending?</span>
-                    <div class="grid grid-cols-2 gap-4">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="attending" value="yes" class="peer sr-only" checked>
-                            <div class="rounded-lg border border-gray-300 p-4 text-center peer-checked:border-wedding-gold peer-checked:bg-wedding-gold-light peer-checked:text-wedding-charcoal transition hover:bg-gray-50">
-                                <div class="font-semibold">Joyfully Accept</div>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="attending" value="no" class="peer sr-only">
-                            <div class="rounded-lg border border-gray-300 p-4 text-center peer-checked:border-rose-400 peer-checked:bg-rose-50 peer-checked:text-rose-700 transition hover:bg-gray-50">
-                                <div class="font-semibold">Regretfully Decline</div>
-                            </div>
-                        </label>
-                    </div>
                 </div>
 
                 <!-- Guest Count -->
                 <div id="guest-count-container">
-                    <label for="guests" class="block text-sm font-medium text-wedding-charcoal mb-1">Number of Guests</label>
-                    <select id="guests" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-wedding-gold-light focus:border-wedding-gold outline-none transition duration-200 bg-gray-50">
-                        <option value="1">1 Person</option>
-                        <option value="2">2 People</option>
-                        <option value="3">3 People</option>
-                        <option value="4">4 People</option>
-                        <option value="5">5 People</option>
-                        <option value="6">6 People</option>
-                        <option value="7">7 People</option>
-                        <option value="8">8 People</option>
-                        <option value="9">9 People</option>
-                        <option value="10">10 People</option>
-                    </select>
+                    <label for="guests" class="block text-sm font-medium text-wedding-charcoal mb-1">Number of guests</label>
+                    <input type="number" id="guests" min="1" required placeholder="e.g. 2"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-wedding-gold-light focus:border-wedding-gold outline-none transition duration-200 bg-gray-50">
                 </div>
 
                 <button type="submit" id="submit-btn" 
@@ -274,16 +236,16 @@
         import { getDatabase, ref, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         // IMPORTANT: Reverted to your NEW project where you fixed the security rules (58a26)
-        const firebaseConfig = {
-        apiKey: "AIzaSyCqeylMl37qqzIbr4tprpZOD3nCN1lLb1E",
-          authDomain: "engagement-rsvp-58a26.firebaseapp.com",
-          databaseURL: "https://engagement-rsvp-58a26-default-rtdb.firebaseio.com",
-          projectId: "engagement-rsvp-58a26",
-          storageBucket: "engagement-rsvp-58a26.firebasestorage.app",
-          messagingSenderId: "788570208401",
-          appId: "1:788570208401:web:583de9f0a54c75ca78a730",
-          measurementId: "G-5EP8YYK9HK"
-        };
+    const firebaseConfig = {
+  apiKey: "AIzaSyCqeylMl37qqzIbr4tprpZOD3nCN1lLb1E",
+  authDomain: "engagement-rsvp-58a26.firebaseapp.com",
+  databaseURL: "https://engagement-rsvp-58a26-default-rtdb.firebaseio.com",
+  projectId: "engagement-rsvp-58a26",
+  storageBucket: "engagement-rsvp-58a26.firebasestorage.app",
+  messagingSenderId: "788570208401",
+  appId: "1:788570208401:web:583de9f0a54c75ca78a730",
+  measurementId: "G-5EP8YYK9HK"
+};
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -320,23 +282,7 @@
         const form = document.getElementById('rsvp-form');
         const submitBtn = document.getElementById('submit-btn');
         const successMsg = document.getElementById('success-message');
-        const attendingRadios = document.getElementsByName('attending');
         const guestContainer = document.getElementById('guest-count-container');
-
-        // Toggle guest count based on attendance
-        attendingRadios.forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                if (e.target.value === 'no') {
-                    guestContainer.style.opacity = '0.5';
-                    guestContainer.style.pointerEvents = 'none';
-                    document.getElementById('guests').value = 0;
-                } else {
-                    guestContainer.style.opacity = '1';
-                    guestContainer.style.pointerEvents = 'auto';
-                    document.getElementById('guests').value = 1;
-                }
-            });
-        });
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -351,8 +297,9 @@
                 const name = document.getElementById('name').value;
                 const email = document.getElementById('email').value;
                 const phone = document.getElementById('phone').value;
-                const attending = document.querySelector('input[name="attending"]:checked').value === 'yes';
-                const guests = attending ? parseInt(document.getElementById('guests').value) : 0;
+                
+                const attending = true; 
+                const guests = parseInt(document.getElementById('guests').value);
                 
                 // 1. Save to Firebase
                 const newRsvpRef = push(ref(db, 'rsvps'));
@@ -407,9 +354,8 @@
             successMsg.classList.add('hidden');
             guestContainer.style.opacity = '1';
             guestContainer.style.pointerEvents = 'auto';
-            document.getElementById('guests').value = 1;
+            document.getElementById('guests').value = '';
         }
     </script>
 </body>
 </html>
-
